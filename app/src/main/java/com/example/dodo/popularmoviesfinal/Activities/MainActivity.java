@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
 
-    private static Retrofit retrofit = null;
+    public static Retrofit retrofit = null;
 
     private MoviesAdapter moviesAdapter;
 

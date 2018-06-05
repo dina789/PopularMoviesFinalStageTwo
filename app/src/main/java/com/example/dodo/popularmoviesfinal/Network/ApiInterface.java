@@ -2,6 +2,7 @@ package com.example.dodo.popularmoviesfinal.Network;
 
 
 import com.example.dodo.popularmoviesfinal.Models.MovieResponse;
+import com.example.dodo.popularmoviesfinal.Models.ReviewResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -21,6 +22,8 @@ public interface ApiInterface {
   @GET("/3/movie/popular")
   Call<MovieResponse> getPopular(@Query("api_key") String API_KEY);
 
+  @GET("3 /movie/{id}/reviews")
+  Call<ReviewResponse> getResults(@Query("api_key") String API_KEY);
 }
 
 
