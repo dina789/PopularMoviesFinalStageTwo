@@ -104,7 +104,7 @@ public class MoviesData implements Serializable
         this.voteCount = voteCount;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
