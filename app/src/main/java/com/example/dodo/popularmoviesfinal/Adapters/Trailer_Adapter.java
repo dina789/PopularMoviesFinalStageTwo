@@ -10,9 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.dodo.popularmoviesfinal.Activities.Details_Activity;
 import com.example.dodo.popularmoviesfinal.Models.VideoModel;
 import com.example.dodo.popularmoviesfinal.R;
 
