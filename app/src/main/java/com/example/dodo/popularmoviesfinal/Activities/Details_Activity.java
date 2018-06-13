@@ -42,7 +42,7 @@ import static com.example.dodo.popularmoviesfinal.Activities.MainActivity.retrof
 public  class Details_Activity extends AppCompatActivity {
     private static final String TAG = Details_Activity.class.getSimpleName();
 
-    public static final String API_KEY = "90cfeb2390166bcd501adabe6f68e59a";
+    public static final String API_KEY = "";
     private static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
 
     private RecyclerView mRecyclerViewReviews;
@@ -66,6 +66,7 @@ public  class Details_Activity extends AppCompatActivity {
         setupAdapter();
         fetchReviews();
         setupTrailers();
+        fetchTrailer();
 
         TextView text_release_date = findViewById(R.id.text_release_date);
 
@@ -99,12 +100,9 @@ public  class Details_Activity extends AppCompatActivity {
         Recycler_trailer = findViewById(R.id.Recycler_trailer);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         Recycler_trailer.setLayoutManager(mLayoutManager);
-
+        mTrailer_Adapter = new Trailer_Adapter(this);
         Recycler_trailer.setAdapter(mTrailer_Adapter);
-        Recycler_trailer.setHasFixedSize(false);
-        mTrailer_Adapter.notifyDataSetChanged();
     }
-
 
     private void setupAdapter() {
 
@@ -170,13 +168,13 @@ public  class Details_Activity extends AppCompatActivity {
         }
         ApiInterface TrailerApiService = retrofit.create(ApiInterface.class);
 
-        Call<VideoResponse> call = TrailerApiService.getMovieTrailers(movieModel.getId());
+        Call<VideoResponse> call = TrailerApiService.getMovieTrailers(movieModel.getId(), API_KEY);
         call.enqueue(new Callback<VideoResponse>() {
             @Override
             public void onResponse(Call<VideoResponse> call, Response<VideoResponse> response) {
                 assert response.body() != null;
                 List<VideoModel> trailer = response.body().getResults();
-                Recycler_trailer.setAdapter(new Trailer_Adapter(getApplicationContext(), trailer));
+                mTrailer_Adapter.updateTrailers(trailer);
                 Recycler_trailer.smoothScrollToPosition(0);
             }
 
@@ -190,7 +188,6 @@ public  class Details_Activity extends AppCompatActivity {
         });
     }
 }
-
 
 
 

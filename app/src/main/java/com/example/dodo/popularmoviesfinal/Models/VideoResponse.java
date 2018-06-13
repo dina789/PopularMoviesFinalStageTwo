@@ -9,48 +9,48 @@ import java.util.List;
 
 
 
-    public class VideoResponse implements Serializable
+public class VideoResponse implements Serializable
 {
 
-        @SerializedName("id")
-        @Expose
-        private Integer id;
-        @SerializedName("results")
-        @Expose
-        private List<VideoResponse> results = null;
-        private final static long serialVersionUID = -5066103928079960859L;
+    @SerializedName("id")
+    @Expose
+    private Integer id;
+    @SerializedName("results")
+    @Expose
+    private List<VideoModel> results = null;
+    private final static long serialVersionUID = -5066103928079960859L;
 
-        /**
-         * No args constructor for use in serialization
-         */
-        public VideoResponse() {
-        }
+    /**
+     * No args constructor for use in serialization
+     */
+    public VideoResponse() {
+    }
 
-        /**
-         * @param id
-         * @param results
-         */
-        public VideoResponse(Integer id, List<VideoResponse> results) {
-            super();
-            this.id = id;
-            this.results = results;
-        }
+    /**
+     * @param id
+     * @param results
+     */
+    public VideoResponse(Integer id, List<VideoModel> results) {
+        super();
+        this.id = id;
+        this.results = results;
+    }
 
-        public Integer getId() {
-            return id;
-        }
+    public Integer getId() {
+        return id;
+    }
 
-        public void setId(Integer id) {
-            this.id = id;
-        }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-        public List<VideoModel> getResults() {
-            return results;
-        }
+    public List<VideoModel> getResults() {
+        return results;
+    }
 
-        public void setResults(List<VideoResponse> results) {
-            this.results = results;
-        }
+    public void setResults(List<VideoModel> results) {
+        this.results = results;
+    }
 
 }
 

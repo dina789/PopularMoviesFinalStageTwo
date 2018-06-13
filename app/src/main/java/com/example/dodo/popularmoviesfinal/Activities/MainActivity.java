@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private MoviesAdapter moviesAdapter;
 
-    public static final String  API_KEY = "90cfeb2390166bcd501adabe6f68e59a";
+    public static final String  API_KEY = "";
 
   //  private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -223,6 +223,9 @@ In order to refresh the inbox, SwipeRefreshLayout is wrapped around the Recycler
 This article doesn’t explains the persistence of the data.
 So the inbox will be reset to initial state up on refresh.
 
+
+  // to open youtube from app reference
+//https://stackoverflow.com/questions/41378568/how-to-open-a-youtube-video-link-directly-from-android-app?rq=1
 
 
 https://stackoverflow.com/questions/309424/read-convert-an-inputstream-to-a-string

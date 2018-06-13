@@ -5,7 +5,12 @@
 
 
 
-
+    <item
+        android:id="@+id/Favourite"
+        android:orderInCategory="100"
+        android:title="Favourite"
+        tools:ignore="HardcodedText,UnusedAttribute"
+        app:showAsAction="never" />
 
 
     <item

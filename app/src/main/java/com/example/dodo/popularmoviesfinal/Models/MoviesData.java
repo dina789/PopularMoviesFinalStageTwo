@@ -14,7 +14,7 @@ public class MoviesData implements Serializable
     private Integer voteCount;
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private String id;
     @SerializedName("video")
     @Expose
     private Boolean video;
@@ -78,7 +78,7 @@ public class MoviesData implements Serializable
      * @param video
      * @param popularity
      */
-    public MoviesData(Integer voteCount, Integer id, Boolean video, Double voteAverage, String title, Double popularity, String posterPath, String originalLanguage, String originalTitle, List<Integer> genreIds, String backdropPath, Boolean adult, String overview, String releaseDate) {
+    public MoviesData(Integer voteCount, String id, Boolean video, Double voteAverage, String title, Double popularity, String posterPath, String originalLanguage, String originalTitle, List<Integer> genreIds, String backdropPath, Boolean adult, String overview, String releaseDate) {
         super();
         this.voteCount = voteCount;
         this.id = id;
@@ -108,7 +108,7 @@ public class MoviesData implements Serializable
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -208,8 +208,7 @@ public class MoviesData implements Serializable
         this.releaseDate = releaseDate;
     }
 
-}
-    /*
+}    /*
     //https://github.com/dina789/Web1
 
     http://api.themoviedb.org/3/movie/popular?api_key=

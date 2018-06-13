@@ -30,8 +30,8 @@ public interface ApiInterface {
  // @GET("movie/{movie_id}/videos")
  // Call<VideoResponse> getMovieTrailer(@Path("movie_id") int id, @Query("api_key") String apiKey);
 
-  @GET("3/movie/{id}/videos?")
-  Call<VideoResponse>   getMovieTrailers(@Path("id") String id );
+  @GET("./{id}/videos")
+  Call<VideoResponse> getMovieTrailers(@Path("id") String id, @Query("api_key") String API_KEY);
 }
 
 
