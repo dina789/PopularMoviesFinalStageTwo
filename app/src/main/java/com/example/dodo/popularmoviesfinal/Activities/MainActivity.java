@@ -12,12 +12,14 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.dodo.popularmoviesfinal.Adapters.MoviesAdapter;
 import com.example.dodo.popularmoviesfinal.Models.MovieResponse;
 import com.example.dodo.popularmoviesfinal.Models.MoviesData;
 import com.example.dodo.popularmoviesfinal.Network.ApiInterface;
 import com.example.dodo.popularmoviesfinal.R;
+import com.example.dodo.popularmoviesfinal.ViewModel.MainViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -191,7 +193,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
-}
+
+        }
+
 
 
 
@@ -223,10 +227,8 @@ In order to refresh the inbox, SwipeRefreshLayout is wrapped around the Recycler
 This article doesn’t explains the persistence of the data.
 So the inbox will be reset to initial state up on refresh.
 
-
-  // to open youtube from app reference
-//https://stackoverflow.com/questions/41378568/how-to-open-a-youtube-video-link-directly-from-android-app?rq=1
-
+get an adapter position:
+https://stackoverflow.com/questions/30947805/getadapterposition-not-returning-position-of-item-in-recyclerview
 
 https://stackoverflow.com/questions/309424/read-convert-an-inputstream-to-a-string
 for setting and menu:
@@ -256,6 +258,26 @@ https://discussions.udacity.com/t/butterknife-where-to-bind-viewholder-views-in-
 
 */
 //https://api.themoviedb.org/3/movie/343611?api_key={api_key}&append_to_response=videos
+
+//using room https://review.udacity.com/#!/rubrics/67/view
+/*
+notes:
+https://developer.android.com/topic/libraries/architecture/livedata
+https://codelabs.developers.google.com/codelabs/android-persistence/#0
+live data; considers an observer, which is represented by the Observer class
+active when
+if its lifecycle is in the STARTED or RESUMED state. if its lifecycle is in the STARTED or RESUMED state.
+
+https://developer.android.com/topic/libraries/architecture/viewmodel
+The ViewModel class is designed to store and manage UI-related data in a lifecycle conscious way.
+ The ViewModel class allows data to survive configuration changes such as screen rotations.
+ android architecture:
+https://classroom.udacity.com/nanodegrees/nd801/parts/9bb83157-0407-47dc-b0c4-c3d4d7dc66df/modules/3c3871cd-e3e7-4c6c-a845-a09f7fc83855/lessons/7ef37c82-7a52-40b5-b557-c8b7243980c4/concepts/d8ed8497-2f20-467f-a40e-f0070a09b2df
+ room:
+ https://android.jlelse.eu/getting-started-with-room-persistence-library-8932276b4d8c
+
+
+
 
 /*
 https://github.com/codepath/android_guides/wiki/Consuming-APIs-with-Retrofit

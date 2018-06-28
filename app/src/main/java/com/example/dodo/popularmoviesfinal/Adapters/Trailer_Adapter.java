@@ -73,9 +73,13 @@ public class Trailer_Adapter extends RecyclerView.Adapter <Trailer_Adapter.ViewH
             iv_trailers = (ImageView) itemView.findViewById(R.id.iv_trailers);
             tv_trailer_title = (TextView) itemView.findViewById(R.id.tv_trailer_title);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener()
+            {
                 @Override
                 public void onClick(View view) {
+
+                    //Call getAdapterPosition() in your onClick()
+                    // method because then at the time of the click you want to know the position of the item.
                     int pos = getAdapterPosition();
                     if (pos != RecyclerView.NO_POSITION)
 

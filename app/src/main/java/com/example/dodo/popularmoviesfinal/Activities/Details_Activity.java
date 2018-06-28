@@ -2,10 +2,13 @@ package com.example.dodo.popularmoviesfinal.Activities;
 
 
 
+
+import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.dodo.popularmoviesfinal.Adapters.Review_Adapter;
 import com.example.dodo.popularmoviesfinal.Adapters.Trailer_Adapter;
+
 import com.example.dodo.popularmoviesfinal.Models.MoviesData;
 import com.example.dodo.popularmoviesfinal.Models.ReviewModel;
 import com.example.dodo.popularmoviesfinal.Models.ReviewResponse;
@@ -24,6 +28,9 @@ import com.example.dodo.popularmoviesfinal.Models.VideoModel;
 import com.example.dodo.popularmoviesfinal.Models.VideoResponse;
 import com.example.dodo.popularmoviesfinal.Network.ApiInterface;
 import com.example.dodo.popularmoviesfinal.R;
+
+
+import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -38,35 +45,35 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.example.dodo.popularmoviesfinal.Activities.MainActivity.retrofit;
 
 
-public  class Details_Activity extends AppCompatActivity {
+public  class Details_Activity extends AppCompatActivity{
     private static final String TAG = Details_Activity.class.getSimpleName();
-
+    Context context;
     public static final String API_KEY = "";
     private static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
 
-    private RecyclerView mRecyclerViewReviews;
-
     private ArrayList<ReviewModel> mReviewList = new ArrayList<>();
     public Review_Adapter mReviewAdapter;
-
     Trailer_Adapter mTrailer_Adapter;
     private RecyclerView Recycler_trailer;
     private MoviesData movieModel;
-    private List<VideoModel> trailerList;
+
+    MaterialFavoriteButton materialFavoriteButton;
+
+    private AppCompatActivity activity = Details_Activity.this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details_);
+                  context = getApplicationContext();
 
         Intent intentGetMovieDetails = getIntent();
         movieModel = (MoviesData) intentGetMovieDetails.getSerializableExtra("movieModel");
-
         setupAdapter();
         fetchReviews();
         setupTrailers();
         fetchTrailer();
-
+      //  setupViewModel();
         TextView text_release_date = findViewById(R.id.text_release_date);
 
         text_release_date.setText(movieModel.getReleaseDate().substring(0, 4));
@@ -91,101 +98,122 @@ public  class Details_Activity extends AppCompatActivity {
         double rate = movieModel.getVoteAverage();
         rate = rate / 2;
         rating_bar.setRating((float) rate);
-
-    }
-
-
-    private void setupTrailers() {
-        Recycler_trailer = findViewById(R.id.Recycler_trailer);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        Recycler_trailer.setLayoutManager(mLayoutManager);
-        mTrailer_Adapter = new Trailer_Adapter(this);
-        Recycler_trailer.setAdapter(mTrailer_Adapter);
-    }
-
-    private void setupAdapter() {
-
-        RecyclerView recyclerView = findViewById(R.id.Recycler_reviews);
-
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-
-        recyclerView.setLayoutManager(mLayoutManager);
+        materialFavoriteButton = findViewById(R.id.Button_fav);
 
 
-        mReviewAdapter = new Review_Adapter(new ArrayList<ReviewModel>(), this);
 
-        /* Setting the adapter attaches it to the RecyclerView in our layout. */
-        recyclerView.setAdapter(mReviewAdapter);
+        materialFavoriteButton.setOnFavoriteChangeListener(
+                new MaterialFavoriteButton.OnFavoriteChangeListener() {
+                    @Override
+                    public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
 
-        recyclerView.setHasFixedSize(true);
-    }
+                        }
+                    }
+                );}
 
 
-    private void fetchReviews() {
 
 
-        if (retrofit == null) {
 
-            retrofit = new Retrofit.Builder()
 
-                    .baseUrl(BASE_URL)
 
-                    .addConverterFactory(GsonConverterFactory.create())
 
-                    .build();
 
+    private void setupTrailers () {
+            Recycler_trailer = findViewById(R.id.Recycler_trailer);
+            LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+            Recycler_trailer.setLayoutManager(mLayoutManager);
+            mTrailer_Adapter = new Trailer_Adapter(this);
+            Recycler_trailer.setAdapter(mTrailer_Adapter);
         }
 
-        ApiInterface ReviewApiService = retrofit.create(ApiInterface.class);
 
-        Call<ReviewResponse> call = ReviewApiService.getResults(movieModel.getId(), API_KEY);
-        call.enqueue(new Callback<ReviewResponse>() {
+        private void setupAdapter () {
 
-            @Override
-            public void onResponse(@NonNull Call<ReviewResponse> call, @NonNull Response<ReviewResponse> response) {
+            RecyclerView recyclerView = findViewById(R.id.Recycler_reviews);
 
-                assert response.body() != null;
-                List<ReviewModel> mreviewList = response.body().getResults();
-                mReviewAdapter.setItems(mreviewList);
-            }
+            LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
 
-            @Override
-            public void onFailure(@NonNull Call<ReviewResponse> call, @NonNull Throwable t) {
-                // Log error here since request failed
-                Log.e(TAG, t.toString());
-            }
-        });
-    }
+            recyclerView.setLayoutManager(mLayoutManager);
 
-    private void fetchTrailer() {
 
-        if (retrofit == null) {
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+            mReviewAdapter = new Review_Adapter(new ArrayList<ReviewModel>(), this);
+
+            /* Setting the adapter attaches it to the RecyclerView in our layout. */
+            recyclerView.setAdapter(mReviewAdapter);
+
+            recyclerView.setHasFixedSize(true);
         }
-        ApiInterface TrailerApiService = retrofit.create(ApiInterface.class);
 
-        Call<VideoResponse> call = TrailerApiService.getMovieTrailers(movieModel.getId(), API_KEY);
-        call.enqueue(new Callback<VideoResponse>() {
-            @Override
-            public void onResponse(Call<VideoResponse> call, Response<VideoResponse> response) {
-                assert response.body() != null;
-                List<VideoModel> trailer = response.body().getResults();
-                mTrailer_Adapter.updateTrailers(trailer);
-                Recycler_trailer.smoothScrollToPosition(0);
-            }
 
-            @Override
-            public void onFailure(Call<VideoResponse> call, Throwable t) {
-                Log.d("Error", t.getMessage());
-                Toast.makeText(Details_Activity.this, "Error fetching trailer data", Toast.LENGTH_SHORT).show();
+        private void fetchReviews () {
+
+
+            if (retrofit == null) {
+
+                retrofit = new Retrofit.Builder()
+
+                        .baseUrl(BASE_URL)
+
+                        .addConverterFactory(GsonConverterFactory.create())
+
+                        .build();
 
             }
 
-        });
-    }
+            ApiInterface ReviewApiService = retrofit.create(ApiInterface.class);
+
+            Call<ReviewResponse> call = ReviewApiService.getResults(movieModel.getId(), API_KEY);
+            call.enqueue(new Callback<ReviewResponse>() {
+
+                @Override
+                public void onResponse(@NonNull Call<ReviewResponse> call, @NonNull Response<ReviewResponse> response) {
+
+                    assert response.body() != null;
+                    List<ReviewModel> mreviewList = response.body().getResults();
+                    mReviewAdapter.setItems(mreviewList);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<ReviewResponse> call, @NonNull Throwable t) {
+                    // Log error here since request failed
+                    Log.e(TAG, t.toString());
+                }
+            });
+        }
+
+        private void fetchTrailer () {
+
+            if (retrofit == null) {
+                retrofit = new Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+            }
+            ApiInterface TrailerApiService = retrofit.create(ApiInterface.class);
+
+            Call<VideoResponse> call = TrailerApiService.getMovieTrailers(movieModel.getId(), API_KEY);
+            call.enqueue(new Callback<VideoResponse>() {
+                @Override
+                public void onResponse(Call<VideoResponse> call, Response<VideoResponse> response) {
+                    assert response.body() != null;
+                    List<VideoModel> trailer = response.body().getResults();
+                    mTrailer_Adapter.updateTrailers(trailer);
+                    Recycler_trailer.smoothScrollToPosition(0);
+                }
+
+                @Override
+                public void onFailure(Call<VideoResponse> call, Throwable t) {
+                    Log.d("Error", t.getMessage());
+                    Toast.makeText(Details_Activity.this, "Error fetching trailer data", Toast.LENGTH_SHORT).show();
+
+                }
+
+            });
+        }
+
+
+
 }
 
 
@@ -214,3 +242,135 @@ public  class Details_Activity extends AppCompatActivity {
 //for fav activity watch video:
         //https://www.youtube.com/watch?v=-R7qYjEfQO4&t=546s
 //https://www.youtube.com/watch?v=JJqVPKrL2e8&t=102s
+/*
+
+
+
+    private void setupViewModel () {
+
+                            MainViewModel movieViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+                            movieViewModel.getMovies().observe(Details_Activity.this, new Observer<List<MoviesData>>()
+
+
+                            {
+                                public void onChanged(@Nullable List<MoviesData> moviesEntries) {
+
+                                    Log.d(TAG, "Updating list of tasks from LiveData in ViewModel");
+                                    MoviesAdapter mAdapter.setMovies(moviesEntries);
+// select the button
+
+//set tasks m3 adapter
+
+
+                                }
+
+                                      MoviesDataBase mDb = MoviesDataBase.getInstance(getApplicationContext());
+        setupViewModel();
+
+                            }}
+
+
+
+
+  SAVING DATA USING ROOM LIBRARY:
+  https://en.proft.me/2017/11/15/saving-data-using-room-android/
+  https://discussions.udacity.com/t/using-room-library/810899/2
+
+
+
+
+ */
+
+/*
+ private void deleteFavorite() {
+
+
+        final MoviesData favoriteMovie = new MoviesData(
+                moviesData.getId(),
+                moviesData.getVoteAverage(),
+                moviesData.getTitle(),
+                moviesData.getPosterPath(),
+                moviesData.getBackdropPath(),
+                moviesData.getOverview(),
+                moviesData.getReleaseDate()
+
+        );
+
+
+        final MoviesDataBase database = MoviesDataBase .getInstance(context);
+
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                //if (!(movie.getId().equals(database.movieDao().loadMovieById(movie.getId()).getValue().getId()))) {
+                database.movieDao().insertMovie(favoriteMovie);
+                //}
+            }
+        });
+    }
+
+
+    private void saveFavorite() {
+
+
+
+        final MoviesData favoriteMovie = new MoviesData(
+                moviesData.getId(),
+                moviesData.getVoteAverage(),
+                moviesData.getTitle(),
+                moviesData.getPosterPath(),
+                moviesData.getBackdropPath(),
+                moviesData.getOverview(),
+                moviesData.getReleaseDate()
+        );
+        final MoviesDataBase database = MoviesDataBase .getInstance(context);
+
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+        @Override
+        public void run() {
+            //if (!(movie.getId().equals(database.movieDao().loadMovieById(movie.getId()).getValue().getId()))) {
+            database.movieDao().insertMovie(favoriteMovie);
+            //}
+        }
+    });
+}
+ setMaterialFavoriteButtonOnLoad();
+  private void setMaterialFavoriteButtonOnLoad() {
+
+
+        mDb = MoviesDataBase.getInstance(getApplicationContext());
+
+     ViewModelFactory modelFactory = new   ViewModelFactory(  mDb, moviesData.getId());
+        final AddMovieViewModel movieViewModel = ViewModelProviders.of(this, modelFactory).get(AddMovieViewModel.class);
+        movieViewModel. getMoviesList().observe(Details_Activity.this, new Observer<MoviesData>() {
+            @Override
+            public void onChanged(@Nullable MoviesData movie) {
+                favoriteMovie = movie;
+                if (movie == null) {
+                    materialFavoriteButton.setFavorite(false);
+                    Log.d(TAG, "onChanged: favorite not found");
+                    // deselect the favorite button
+                } else {
+                    materialFavoriteButton.setFavorite(true);
+                    Log.d(TAG, "onChanged: favorite found");
+                    // select the button
+                }
+            }
+        });
+
+    }
+
+
+    if (favorite) {
+                            saveFavorite();
+
+                            Snackbar.make(buttonView, "Added to Favorite",
+                                    Snackbar.LENGTH_SHORT).show();
+                        }
+                        else{
+                            deleteFavorite();
+                            Snackbar.make(buttonView, "Removed from Favorite",
+                                    Snackbar.LENGTH_SHORT).show();
+
+
+ */

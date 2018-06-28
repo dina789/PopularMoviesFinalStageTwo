@@ -1,17 +1,25 @@
 package com.example.dodo.popularmoviesfinal.Models;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.List;
 
+@Entity (tableName = "MoviesFavorite")
 public class MoviesData implements Serializable
 {
 
     @SerializedName("vote_count")
     @Expose
     private Integer voteCount;
+    @PrimaryKey
+    @NonNull
     @SerializedName("id")
     @Expose
     private String id;
@@ -57,8 +65,17 @@ public class MoviesData implements Serializable
     /**
      * No args constructor for use in serialization
      *
+     * @param id
+     * @param voteAverage
+     * @param title
+     * @param posterPath
+     * @param backdropPath
+     * @param overview
+     * @param releaseDate
      */
-    public MoviesData() {
+    //to let room use the second constructor we add the ignor annotation.
+    @Ignore
+    public MoviesData(String id, Double voteAverage, String title, String posterPath, String backdropPath, String overview, String releaseDate) {
     }
 
     /**
@@ -103,7 +120,7 @@ public class MoviesData implements Serializable
     public void setVoteCount(Integer voteCount) {
         this.voteCount = voteCount;
     }
-
+    @NonNull
     public String getId() {
         return id;
     }
