@@ -108,12 +108,12 @@ public  class Details_Activity extends AppCompatActivity{
         rating_bar.setRating((float) rate);
 
 
+            materialFavoriteButton =
+                (MaterialFavoriteButton) findViewById(R.id.     Button_fav);
 
-        MaterialFavoriteButton    Button_fav = findViewById(R.id.Button_fav);
 
 
-
-        Button_fav.setOnClickListener(new View.OnClickListener() {
+        materialFavoriteButton .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Create a new intent to start an AddTaskActivity
