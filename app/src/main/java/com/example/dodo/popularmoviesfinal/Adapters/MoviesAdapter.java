@@ -70,6 +70,11 @@ public class MoviesAdapter extends RecyclerView.Adapter < MoviesAdapter.MovieVie
         return mMovieList.size();
     }
 
+
+
+
+
+
     public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final ImageView image_poster;
 

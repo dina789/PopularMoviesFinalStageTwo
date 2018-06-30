@@ -3,24 +3,28 @@ package com.example.dodo.popularmoviesfinal.Activities;
 
 
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-
+import android.graphics.Movie;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dodo.popularmoviesfinal.Adapters.MoviesAdapter;
 import com.example.dodo.popularmoviesfinal.Adapters.Review_Adapter;
 import com.example.dodo.popularmoviesfinal.Adapters.Trailer_Adapter;
-
+import com.example.dodo.popularmoviesfinal.DB.MoviesDataBase;
 import com.example.dodo.popularmoviesfinal.Models.MoviesData;
 import com.example.dodo.popularmoviesfinal.Models.ReviewModel;
 import com.example.dodo.popularmoviesfinal.Models.ReviewResponse;
@@ -28,8 +32,9 @@ import com.example.dodo.popularmoviesfinal.Models.VideoModel;
 import com.example.dodo.popularmoviesfinal.Models.VideoResponse;
 import com.example.dodo.popularmoviesfinal.Network.ApiInterface;
 import com.example.dodo.popularmoviesfinal.R;
-
-
+import com.example.dodo.popularmoviesfinal.ViewModel.AddMovieViewModel;
+import com.example.dodo.popularmoviesfinal.ViewModel.MainViewModel;
+import com.example.dodo.popularmoviesfinal.ViewModel.ViewModelFactory;
 import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 import com.squareup.picasso.Picasso;
 
@@ -48,24 +53,27 @@ import static com.example.dodo.popularmoviesfinal.Activities.MainActivity.retrof
 public  class Details_Activity extends AppCompatActivity{
     private static final String TAG = Details_Activity.class.getSimpleName();
     Context context;
+
+
+
     public static final String API_KEY = "";
     private static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
 
-    private ArrayList<ReviewModel> mReviewList = new ArrayList<>();
     public Review_Adapter mReviewAdapter;
     Trailer_Adapter mTrailer_Adapter;
     private RecyclerView Recycler_trailer;
     private MoviesData movieModel;
-
+    private MoviesDataBase mDb;
     MaterialFavoriteButton materialFavoriteButton;
 
-    private AppCompatActivity activity = Details_Activity.this;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details_);
-                  context = getApplicationContext();
+        context = getApplicationContext();
 
         Intent intentGetMovieDetails = getIntent();
         movieModel = (MoviesData) intentGetMovieDetails.getSerializableExtra("movieModel");
@@ -73,7 +81,7 @@ public  class Details_Activity extends AppCompatActivity{
         fetchReviews();
         setupTrailers();
         fetchTrailer();
-      //  setupViewModel();
+        //  setupViewModel();
         TextView text_release_date = findViewById(R.id.text_release_date);
 
         text_release_date.setText(movieModel.getReleaseDate().substring(0, 4));
@@ -88,7 +96,7 @@ public  class Details_Activity extends AppCompatActivity{
 
         RatingBar rating_bar = findViewById(R.id.rating_bar);
 
-        text_original_title.setText(movieModel.getOriginalTitle()); //original title
+        text_original_title.setText(movieModel.getTitle()); //original title
         text_overview.setText(movieModel.getOverview());  //overview
         if (movieModel.getOverview() == "") {
             text_overview.setText("Overview:\n Overview not available !!");
@@ -98,27 +106,45 @@ public  class Details_Activity extends AppCompatActivity{
         double rate = movieModel.getVoteAverage();
         rate = rate / 2;
         rating_bar.setRating((float) rate);
-        materialFavoriteButton = findViewById(R.id.Button_fav);
 
 
 
-        materialFavoriteButton.setOnFavoriteChangeListener(
-                new MaterialFavoriteButton.OnFavoriteChangeListener() {
-                    @Override
-                    public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
+        MaterialFavoriteButton    Button_fav = findViewById(R.id.Button_fav);
 
-                        }
+
+
+        Button_fav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Create a new intent to start an AddTaskActivity
+                Intent addTaskIntent = new Intent(Details_Activity.this, AddMovieViewModel.class);
+                startActivity(addTaskIntent);
+            }
+        });
+
+        mDb = MoviesDataBase.getInstance(getApplicationContext());
+        setupViewModel();
+    }
+
+       private void setupViewModel() {
+        ViewModelFactory modelFactory = new   ViewModelFactory(mDb, movieModel.getId());
+        final AddMovieViewModel movieViewModel = ViewModelProviders.of(this, modelFactory).get(AddMovieViewModel.class);
+        movieViewModel.getMoviesList().observe(Details_Activity.this, new Observer<MoviesData>() {
+
+            @Override
+            public void onChanged(@Nullable MoviesData moviesData) {
+
+                    if (movieModel == null) {
+                        movieViewModel.getMoviesList().removeObserver(this);
+                        materialFavoriteButton.setFavorite(false);
+                        // deselect the favorite button
+                    } else {
+                        movieViewModel.getMoviesList().removeObserver(this);
+                        materialFavoriteButton.setFavorite(true);
+                        // select the button
                     }
-                );}
-
-
-
-
-
-
-
-
-
+                }
+            });}
     private void setupTrailers () {
             Recycler_trailer = findViewById(R.id.Recycler_trailer);
             LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -242,10 +268,15 @@ public  class Details_Activity extends AppCompatActivity{
 //for fav activity watch video:
         //https://www.youtube.com/watch?v=-R7qYjEfQO4&t=546s
 //https://www.youtube.com/watch?v=JJqVPKrL2e8&t=102s
+
+//https://android.jlelse.eu/room-store-your-data-c6d49b4d53a3
+//http://blog.iamsuleiman.com/android-architecture-components-tutorial-room-livedata-viewmodel/
+//https://www.pluralsight.com/guides/making-a-notes-app-using-room-database
+//https://javalibs.com/artifact/com.github.ivbaranov/materialfavoritebutton?className=com.github.ivbaranov.mfb.MaterialFavoriteButton.Builder&source
 /*
 
 
-
+//for reference :
     private void setupViewModel () {
 
                             MainViewModel movieViewModel = ViewModelProviders.of(this).get(MainViewModel.class);

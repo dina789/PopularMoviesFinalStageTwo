@@ -43,11 +43,11 @@ public class MoviesData implements Serializable
     private String originalLanguage;
     @SerializedName("original_title")
     @Expose
-    private String originalTitle;
-    @SerializedName("genre_ids")
-    @Expose
+   private String originalTitle;
+    //@SerializedName("genre_ids")
+  //  @Expose
 
-    private List<Integer> genreIds = null;
+   // private List<Integer> genreIds = null;
     @SerializedName("backdrop_path")
     @Expose
     private String backdropPath;
@@ -80,7 +80,7 @@ public class MoviesData implements Serializable
 
     /**
      *
-     * @param genreIds
+     //* @param genreIds
      * @param id
      * @param title
      * @param releaseDate
@@ -95,7 +95,7 @@ public class MoviesData implements Serializable
      * @param video
      * @param popularity
      */
-    public MoviesData(Integer voteCount, String id, Boolean video, Double voteAverage, String title, Double popularity, String posterPath, String originalLanguage, String originalTitle, List<Integer> genreIds, String backdropPath, Boolean adult, String overview, String releaseDate) {
+    public MoviesData(Integer voteCount, @NonNull  String id, Boolean video, Double voteAverage, String title, Double popularity, String posterPath, String originalLanguage, String originalTitle, String backdropPath, Boolean adult, String overview, String releaseDate) {
         super();
         this.voteCount = voteCount;
         this.id = id;
@@ -105,8 +105,8 @@ public class MoviesData implements Serializable
         this.popularity = popularity;
         this.posterPath = posterPath;
         this.originalLanguage = originalLanguage;
-        this.originalTitle = originalTitle;
-        this.genreIds = genreIds;
+       this.originalTitle = originalTitle;
+      //  this.genreIds = genreIds;
         this.backdropPath = backdropPath;
         this.adult = adult;
         this.overview = overview;
@@ -125,7 +125,7 @@ public class MoviesData implements Serializable
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(@NonNull  String id) {
         this.id = id;
     }
 
@@ -178,20 +178,20 @@ public class MoviesData implements Serializable
     }
 
     public String getOriginalTitle() {
-        return originalTitle;
+       return originalTitle;
     }
 
-    public void setOriginalTitle(String originalTitle) {
+   public void setOriginalTitle(String originalTitle) {
         this.originalTitle = originalTitle;
     }
 
-    public List<Integer> getGenreIds() {
-        return genreIds;
-    }
+  //  public List<Integer> getGenreIds() {
+   //     return genreIds;
+   // }
 
-    public void setGenreIds(List<Integer> genreIds) {
-        this.genreIds = genreIds;
-    }
+  //  public void setGenreIds(List<Integer> genreIds) {
+      //  this.genreIds = genreIds;
+  //  }
 
     public String getBackdropPath() {
         return backdropPath;

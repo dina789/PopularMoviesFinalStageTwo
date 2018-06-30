@@ -5,8 +5,12 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
+import android.view.View;
 
 import com.example.dodo.popularmoviesfinal.Models.MoviesData;
+import com.example.dodo.popularmoviesfinal.R;
+import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 
 import java.util.List;
 
@@ -15,14 +19,25 @@ import java.util.List;
 
     {
 
-        @Query("SELECT * FROM MoviesFavorite ORDER BY originalTitle")
+        @Query("SELECT * FROM MoviesFavorite ORDER BY title")
         LiveData<List<MoviesData>> loadAllMovies();
 
         //the fact we can request objects back that what makes room an object relational mapping library.
+
+
+
+
+
         @Insert
+
+
         void insertMovie(MoviesData movieData);
 
         // rest of method take aMoviesData object as a parameter
+
+
+    //    @Update
+        //void updateMovie(MoviesData movieData);
 
 
         @Query("SELECT * FROM MoviesFavorite WHERE id = :id")
