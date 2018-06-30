@@ -17,7 +17,8 @@ private static final String DATABASE_NAME = "favorites";
 
     private static MoviesDataBase sInstance;
 
-     //will return a moviesdatabse using singleton pattern
+    public abstract MoviesDao movieDao() ;
+    //will return a moviesdatabse using singleton pattern
     //is a softaware design pattern that restrict the installization of a class to one object
     //this is useful when we want to make sure only one obect of a class is created
     public static MoviesDataBase getInstance(Context context) {
@@ -32,7 +33,8 @@ private static final String DATABASE_NAME = "favorites";
         }
         return sInstance;
     }
-    public abstract MoviesDao movieDao();
+
+
 
 }
 

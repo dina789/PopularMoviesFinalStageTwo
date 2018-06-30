@@ -116,9 +116,19 @@ public  class Details_Activity extends AppCompatActivity{
         materialFavoriteButton .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                mDb.movieDao().insertMovie(movieModel);
+
+
+
+
+
+
+
                 // Create a new intent to start an AddTaskActivity
-                Intent addTaskIntent = new Intent(Details_Activity.this, AddMovieViewModel.class);
-                startActivity(addTaskIntent);
+              //  which is not possible as it is not an Activity. So here you should just insert the Movie in the Favourite DB on click of this Button.
+              //  Intent addTaskIntent = new Intent(Details_Activity.this, AddMovieViewModel.class);
+              //  startActivity(addTaskIntent);
             }
         });
 
