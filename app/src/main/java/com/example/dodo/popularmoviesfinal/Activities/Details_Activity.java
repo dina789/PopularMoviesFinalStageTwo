@@ -1,13 +1,10 @@
 package com.example.dodo.popularmoviesfinal.Activities;
 
 
-
-
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Movie;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,9 +18,9 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.dodo.popularmoviesfinal.Adapters.MoviesAdapter;
 import com.example.dodo.popularmoviesfinal.Adapters.Review_Adapter;
 import com.example.dodo.popularmoviesfinal.Adapters.Trailer_Adapter;
+import com.example.dodo.popularmoviesfinal.DB.AppExecutors;
 import com.example.dodo.popularmoviesfinal.DB.MoviesDataBase;
 import com.example.dodo.popularmoviesfinal.Models.MoviesData;
 import com.example.dodo.popularmoviesfinal.Models.ReviewModel;
@@ -33,7 +30,6 @@ import com.example.dodo.popularmoviesfinal.Models.VideoResponse;
 import com.example.dodo.popularmoviesfinal.Network.ApiInterface;
 import com.example.dodo.popularmoviesfinal.R;
 import com.example.dodo.popularmoviesfinal.ViewModel.AddMovieViewModel;
-import com.example.dodo.popularmoviesfinal.ViewModel.MainViewModel;
 import com.example.dodo.popularmoviesfinal.ViewModel.ViewModelFactory;
 import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 import com.squareup.picasso.Picasso;
@@ -50,10 +46,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.example.dodo.popularmoviesfinal.Activities.MainActivity.retrofit;
 
 
-public  class Details_Activity extends AppCompatActivity{
+public class Details_Activity extends AppCompatActivity {
     private static final String TAG = Details_Activity.class.getSimpleName();
     Context context;
-
 
 
     public static final String API_KEY = "";
@@ -65,8 +60,6 @@ public  class Details_Activity extends AppCompatActivity{
     private MoviesData movieModel;
     private MoviesDataBase mDb;
     MaterialFavoriteButton materialFavoriteButton;
-
-
 
 
     @Override
@@ -108,175 +101,178 @@ public  class Details_Activity extends AppCompatActivity{
         rating_bar.setRating((float) rate);
 
 
-            materialFavoriteButton =
-                (MaterialFavoriteButton) findViewById(R.id.     Button_fav);
+        materialFavoriteButton =
+                findViewById(R.id.Button_fav);
 
 
-
-        materialFavoriteButton .setOnClickListener(new View.OnClickListener() {
+        materialFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                mDb.movieDao().insertMovie(movieModel);
+
+                // mDb.movieDao().insertMovie(movieModel);
+                mDb = MoviesDataBase.getInstance(getApplicationContext());
+
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
 
 
+                        mDb.movieDao().insertMovie(movieModel);
 
 
+                        // Create a new intent to start an AddTaskActivity
+                        //  which is not possible as it is not an Activity. So here you should just insert the Movie in the Favourite DB on click of this Button.
+                        //  Intent addTaskIntent = new Intent(Details_Activity.this, AddMovieViewModel.class);
+                        //  startActivity(addTaskIntent);
+                    }
+                });
+                //  mDb = MoviesDataBase.getInstance(getApplicationContext());
 
-
-
-                // Create a new intent to start an AddTaskActivity
-              //  which is not possible as it is not an Activity. So here you should just insert the Movie in the Favourite DB on click of this Button.
-              //  Intent addTaskIntent = new Intent(Details_Activity.this, AddMovieViewModel.class);
-              //  startActivity(addTaskIntent);
+                setupViewModel();
             }
         });
-
-        mDb = MoviesDataBase.getInstance(getApplicationContext());
-        setupViewModel();
     }
 
-       private void setupViewModel() {
-        ViewModelFactory modelFactory = new   ViewModelFactory(mDb, movieModel.getId());
+
+    private void setupViewModel() {
+        ViewModelFactory modelFactory = new ViewModelFactory(mDb, movieModel.getId());
         final AddMovieViewModel movieViewModel = ViewModelProviders.of(this, modelFactory).get(AddMovieViewModel.class);
         movieViewModel.getMoviesList().observe(Details_Activity.this, new Observer<MoviesData>() {
 
             @Override
             public void onChanged(@Nullable MoviesData moviesData) {
 
-                    if (movieModel == null) {
-                        movieViewModel.getMoviesList().removeObserver(this);
-                        materialFavoriteButton.setFavorite(false);
-                        // deselect the favorite button
-                    } else {
-                        movieViewModel.getMoviesList().removeObserver(this);
-                        materialFavoriteButton.setFavorite(true);
-                        // select the button
-                    }
+                if (movieModel == null) {
+                    movieViewModel.getMoviesList().removeObserver(this);
+                    materialFavoriteButton.setFavorite(false);
+                    // deselect the favorite button
+                } else {
+                    movieViewModel.getMoviesList().removeObserver(this);
+                    materialFavoriteButton.setFavorite(true);
+                    // select the button
                 }
-            });}
-    private void setupTrailers () {
-            Recycler_trailer = findViewById(R.id.Recycler_trailer);
-            LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-            Recycler_trailer.setLayoutManager(mLayoutManager);
-            mTrailer_Adapter = new Trailer_Adapter(this);
-            Recycler_trailer.setAdapter(mTrailer_Adapter);
+            }
+        });
+    }
+
+    private void setupTrailers() {
+        Recycler_trailer = findViewById(R.id.Recycler_trailer);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        Recycler_trailer.setLayoutManager(mLayoutManager);
+        mTrailer_Adapter = new Trailer_Adapter(this);
+        Recycler_trailer.setAdapter(mTrailer_Adapter);
+    }
+
+
+    private void setupAdapter() {
+
+        RecyclerView recyclerView = findViewById(R.id.Recycler_reviews);
+
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+
+        recyclerView.setLayoutManager(mLayoutManager);
+
+
+        mReviewAdapter = new Review_Adapter(new ArrayList<ReviewModel>(), this);
+
+        /* Setting the adapter attaches it to the RecyclerView in our layout. */
+        recyclerView.setAdapter(mReviewAdapter);
+
+        recyclerView.setHasFixedSize(true);
+    }
+
+
+    private void fetchReviews() {
+
+
+        if (retrofit == null) {
+
+            retrofit = new Retrofit.Builder()
+
+                    .baseUrl(BASE_URL)
+
+                    .addConverterFactory(GsonConverterFactory.create())
+
+                    .build();
+
         }
 
+        ApiInterface ReviewApiService = retrofit.create(ApiInterface.class);
 
-        private void setupAdapter () {
+        Call<ReviewResponse> call = ReviewApiService.getResults(movieModel.getId(), API_KEY);
+        call.enqueue(new Callback<ReviewResponse>() {
 
-            RecyclerView recyclerView = findViewById(R.id.Recycler_reviews);
+            @Override
+            public void onResponse(@NonNull Call<ReviewResponse> call, @NonNull Response<ReviewResponse> response) {
 
-            LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+                assert response.body() != null;
+                List<ReviewModel> mreviewList = response.body().getResults();
+                mReviewAdapter.setItems(mreviewList);
+            }
 
-            recyclerView.setLayoutManager(mLayoutManager);
+            @Override
+            public void onFailure(@NonNull Call<ReviewResponse> call, @NonNull Throwable t) {
+                // Log error here since request failed
+                Log.e(TAG, t.toString());
+            }
+        });
+    }
 
+    private void fetchTrailer() {
 
-            mReviewAdapter = new Review_Adapter(new ArrayList<ReviewModel>(), this);
-
-            /* Setting the adapter attaches it to the RecyclerView in our layout. */
-            recyclerView.setAdapter(mReviewAdapter);
-
-            recyclerView.setHasFixedSize(true);
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
         }
+        ApiInterface TrailerApiService = retrofit.create(ApiInterface.class);
 
+        Call<VideoResponse> call = TrailerApiService.getMovieTrailers(movieModel.getId(), API_KEY);
+        call.enqueue(new Callback<VideoResponse>() {
+            @Override
+            public void onResponse(Call<VideoResponse> call, Response<VideoResponse> response) {
+                assert response.body() != null;
+                List<VideoModel> trailer = response.body().getResults();
+                mTrailer_Adapter.updateTrailers(trailer);
+                Recycler_trailer.smoothScrollToPosition(0);
+            }
 
-        private void fetchReviews () {
-
-
-            if (retrofit == null) {
-
-                retrofit = new Retrofit.Builder()
-
-                        .baseUrl(BASE_URL)
-
-                        .addConverterFactory(GsonConverterFactory.create())
-
-                        .build();
+            @Override
+            public void onFailure(Call<VideoResponse> call, Throwable t) {
+                Log.d("Error", t.getMessage());
+                Toast.makeText(Details_Activity.this, "Error fetching trailer data", Toast.LENGTH_SHORT).show();
 
             }
 
-            ApiInterface ReviewApiService = retrofit.create(ApiInterface.class);
-
-            Call<ReviewResponse> call = ReviewApiService.getResults(movieModel.getId(), API_KEY);
-            call.enqueue(new Callback<ReviewResponse>() {
-
-                @Override
-                public void onResponse(@NonNull Call<ReviewResponse> call, @NonNull Response<ReviewResponse> response) {
-
-                    assert response.body() != null;
-                    List<ReviewModel> mreviewList = response.body().getResults();
-                    mReviewAdapter.setItems(mreviewList);
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<ReviewResponse> call, @NonNull Throwable t) {
-                    // Log error here since request failed
-                    Log.e(TAG, t.toString());
-                }
-            });
-        }
-
-        private void fetchTrailer () {
-
-            if (retrofit == null) {
-                retrofit = new Retrofit.Builder()
-                        .baseUrl(BASE_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-            }
-            ApiInterface TrailerApiService = retrofit.create(ApiInterface.class);
-
-            Call<VideoResponse> call = TrailerApiService.getMovieTrailers(movieModel.getId(), API_KEY);
-            call.enqueue(new Callback<VideoResponse>() {
-                @Override
-                public void onResponse(Call<VideoResponse> call, Response<VideoResponse> response) {
-                    assert response.body() != null;
-                    List<VideoModel> trailer = response.body().getResults();
-                    mTrailer_Adapter.updateTrailers(trailer);
-                    Recycler_trailer.smoothScrollToPosition(0);
-                }
-
-                @Override
-                public void onFailure(Call<VideoResponse> call, Throwable t) {
-                    Log.d("Error", t.getMessage());
-                    Toast.makeText(Details_Activity.this, "Error fetching trailer data", Toast.LENGTH_SHORT).show();
-
-                }
-
-            });
-        }
-
-
-
+        });
+    }
 }
-
 
 
 /**
  * youtube app
  * https://stackoverflow.com/questions/574195/android-youtube-app-play-video-intent
- *https://github.com/karenclaire/PopMovieSearchStage2/blob/master/app/src/main/java/com/example/android/popmoviesearchstage2/adapters/TrailerAdapter.java
- *
- *check for the right endpoint request for reviews??
- *
+ * https://github.com/karenclaire/PopMovieSearchStage2/blob/master/app/src/main/java/com/example/android/popmoviesearchstage2/adapters/TrailerAdapter.java
+ * <p>
+ * check for the right endpoint request for reviews??
+ * <p>
  * nested scroll view with recycler view layout:
  * https://github.com/pm48/PopularMovies/blob/master/app/src/main/res/layout/fragment_detail.xml
- *https://gist.github.com/eltonjhony/c2846684fd6bad24af6cf6014b2b7287
- *
+ * https://gist.github.com/eltonjhony/c2846684fd6bad24af6cf6014b2b7287
+ * <p>
  * setting detail activity with its adapter and retrofit like done with main activity
  * https://github.com/delaroy/MoviesApp/blob/master/app/src/main/java/com/delaroystudios/movieapp/DetailActivity.java
  * for refrence:
  * https://github.com/ddeleon92/MoviesAppStage2/tree/master/MoviesAppFinal/app/src/main/java/com/example/daou5____/moviesappstage1
- *https://github.com/nikosvaggalis/udacity-nanodegree-popular-movies/blob/master/app/src/main/java/moviedb/example/android/com/moviedb/adapters/ReviewsAdapter.java
- *checking on saved instance state:
+ * https://github.com/nikosvaggalis/udacity-nanodegree-popular-movies/blob/master/app/src/main/java/moviedb/example/android/com/moviedb/adapters/ReviewsAdapter.java
+ * checking on saved instance state:
  * https://gist.github.com/eltonjhony/273396fa8f748b0807daaa3343780082
- *
  */
 //https://findusages.com/search/info.movito.themoviedbapi.model.MovieDb/getReleaseDate$0?offset=1
 //for fav activity watch video:
-        //https://www.youtube.com/watch?v=-R7qYjEfQO4&t=546s
+//https://www.youtube.com/watch?v=-R7qYjEfQO4&t=546s
 //https://www.youtube.com/watch?v=JJqVPKrL2e8&t=102s
 
 //https://android.jlelse.eu/room-store-your-data-c6d49b4d53a3

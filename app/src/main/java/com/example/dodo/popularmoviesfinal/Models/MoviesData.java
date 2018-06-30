@@ -113,6 +113,8 @@ public class MoviesData implements Serializable
         this.releaseDate = releaseDate;
     }
 
+
+
     public Integer getVoteCount() {
         return voteCount;
     }
