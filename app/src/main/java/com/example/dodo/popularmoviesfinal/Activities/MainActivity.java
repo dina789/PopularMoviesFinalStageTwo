@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.dodo.popularmoviesfinal.Adapters.MoviesAdapter;
+import com.example.dodo.popularmoviesfinal.DB.MoviesDataBase;
 import com.example.dodo.popularmoviesfinal.Models.MovieResponse;
 import com.example.dodo.popularmoviesfinal.Models.MoviesData;
 import com.example.dodo.popularmoviesfinal.Network.ApiInterface;
@@ -40,16 +41,17 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
 {
 
-
+    private MoviesDataBase mDBD;
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
 
     public static Retrofit retrofit = null;
+    RecyclerView recycler_view;
 
     private MoviesAdapter moviesAdapter;
 
-    public static final String  API_KEY = "";
+    public static final String  API_KEY = "90cfeb2390166bcd501adabe6f68e59a";
 
   //  private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -60,7 +62,14 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         setupAdapter();
         fetchMostPopular();
+
+
     }
+
+
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -79,7 +88,23 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
+
         int id = item.getItemId();
+
+
+        if (id == R.id.Favourite) {
+            // show fav movies:
+        
+
+
+
+
+            return true;
+        }
+
+
+
         if (id == R.id.most_popular) {
             fetchMostPopular();
             return true;
@@ -93,6 +118,26 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         return super.onOptionsItemSelected(item);
     }
+/*
+
+
+https://www.pluralsight.com/guides/making-a-notes-app-using-room-database
+
+Retrieve And Display NoteList
+
+    Initialize Room database instance and fetch all note objects as List.
+    To display list, we will use RecyclerView.
+    Pass the list of notes to adapter and link adapter with the RecyclerView.
+ */
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -206,11 +251,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
 
 
-
-
-//https://github.com/schordas/RetroStack/blob/master/app/src/main/java/com/android/chordas/retrostack/MainActivity.java
 /*
-//https://www.youtube.com/watch?v=OOLFhtyCspA&t=3625s
+
+https://github.com/schordas/RetroStack/blob/master/app/src/main/java/com/android/chordas/retrostack/MainActivity.java
+
+https://www.youtube.com/watch?v=OOLFhtyCspA&t=3625s
         //https://classroom.udacity.com/nanodegrees/nd801/parts/9bb83157-0407-47dc-b0c4-c3d4d7dc66df/modules/418d7086-8596-4c73-8d1b-8bddef80c116/lessons/5a9d75c2-eb50-4a06-b1ed-b30645f27fdf/concepts/73e97b9e-4ca1-4520-baa1-1f475f5b7bfb
 
 a guide:
@@ -256,11 +301,10 @@ Retrofit pb forum checked:
 https://discussions.udacity.com/t/unknownhostexception-retrofit/619700
 https://discussions.udacity.com/t/butterknife-where-to-bind-viewholder-views-in-recyclerview-adapter/642159/8
 
-*/
-//https://api.themoviedb.org/3/movie/343611?api_key={api_key}&append_to_response=videos
+https://api.themoviedb.org/3/movie/343611?api_key={api_key}&append_to_response=videos
 
-//using room https://review.udacity.com/#!/rubrics/67/view
-/*
+using room https://review.udacity.com/#!/rubrics/67/view
+
 notes:
 https://developer.android.com/topic/libraries/architecture/livedata
 https://codelabs.developers.google.com/codelabs/android-persistence/#0
@@ -274,12 +318,13 @@ The ViewModel class is designed to store and manage UI-related data in a lifecyc
  android architecture:
 https://classroom.udacity.com/nanodegrees/nd801/parts/9bb83157-0407-47dc-b0c4-c3d4d7dc66df/modules/3c3871cd-e3e7-4c6c-a845-a09f7fc83855/lessons/7ef37c82-7a52-40b5-b557-c8b7243980c4/concepts/d8ed8497-2f20-467f-a40e-f0070a09b2df
  room:
+
  https://android.jlelse.eu/getting-started-with-room-persistence-library-8932276b4d8c
+https://steemit.com/utopian-io/@programminghub/using-room-persistent-library-to-make-a-notebook-in-android
 
 
 
 
-/*
 https://github.com/codepath/android_guides/wiki/Consuming-APIs-with-Retrofit
 https://stackoverflow.com/questions/40012341/how-to-define-api-endpoint-for-retrofit
 https://futurestud.io/tutorials/retrofit-optional-query-parameters

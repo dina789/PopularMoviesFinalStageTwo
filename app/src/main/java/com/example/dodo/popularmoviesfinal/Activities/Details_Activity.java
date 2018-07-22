@@ -51,7 +51,7 @@ public class Details_Activity extends AppCompatActivity {
     Context context;
 
 
-    public static final String API_KEY = "";
+    public static final String API_KEY = "90cfeb2390166bcd501adabe6f68e59a";
     private static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
 
     public Review_Adapter mReviewAdapter;
@@ -109,15 +109,15 @@ public class Details_Activity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //query the DB as it contains all the movies which are stored as Favorites.
 
-                // mDb.movieDao().insertMovie(movieModel);
                 mDb = MoviesDataBase.getInstance(getApplicationContext());
 
                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
                     @Override
                     public void run() {
-
-
+                        //create a method in the DAO to insert the movie on click of the favourite button and the insert operation will be performed for that particular movie.
+//To add things in the database we now need to invoke
                         mDb.movieDao().insertMovie(movieModel);
 
 
@@ -127,7 +127,6 @@ public class Details_Activity extends AppCompatActivity {
                         //  startActivity(addTaskIntent);
                     }
                 });
-                //  mDb = MoviesDataBase.getInstance(getApplicationContext());
 
                 setupViewModel();
             }
